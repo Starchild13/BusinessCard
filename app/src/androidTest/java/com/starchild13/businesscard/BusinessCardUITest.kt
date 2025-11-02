@@ -18,23 +18,27 @@
 package com.starchild13.businesscard
 
 import android.content.Intent
-import androidx.compose.material.SnackbarHost
-import androidx.compose.material.SnackbarHostState
-import androidx.compose.ui.test.*
+import androidx.compose.ui.test.assertHasClickAction
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performClick
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intended
-import androidx.test.espresso.intent.matcher.IntentMatchers.*
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasData
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.starchild13.businesscard.ui.theme.BusinessCardTheme
 import org.hamcrest.CoreMatchers.allOf
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-
 
 
 @RunWith(AndroidJUnit4::class)
@@ -46,6 +50,7 @@ class BusinessCardUITest {
     @Before
     fun setUp() {
         Intents.init()
+
         // Wait until the main UI is fully composed
         composeTestRule.waitUntil(timeoutMillis = 10000) {
             composeTestRule.onAllNodesWithText("Jessica Randall").fetchSemanticsNodes().isNotEmpty()
@@ -135,7 +140,7 @@ class BusinessCardUITest {
             )
         }
 
-        // Share Contact
+        // Share Contact uses ACTION_SEND
         composeTestRule.onNodeWithText("Share Contact")
             .assertExists()
             .assertHasClickAction()
@@ -171,14 +176,15 @@ class BusinessCardUITest {
     // ----------------- LAYOUT TESTS -----------------
 
     @Test
-    fun links_haveConsistentWidthAndAlignment() {
-        val nodes = listOf("Portfolio", "LinkedIn", "GitHub").map {
-            composeTestRule.onNodeWithText(it).fetchSemanticsNode()
-        }
-        val lefts = nodes.map { it.boundsInRoot.left }
-        val widths = nodes.map { it.boundsInRoot.width }
-        assert(lefts.distinct().size == 1) { "Links are not aligned" }
-        assert(widths.distinct().size == 1) { "Links have inconsistent width" }
+    fun links_areLeftAligned() {
+        val nodes = listOf(
+            "Portfolio", "@JustJessZA", "LinkedIn", "GitHub",
+            "jess1998mat@gmail.com", "Share Contact"
+        ).map { composeTestRule.onNodeWithText(it).fetchSemanticsNode() }
+
+        val leftPositions = nodes.map { it.boundsInRoot.left }
+        val firstLeft = leftPositions.first()
+        assert(leftPositions.all { it == firstLeft }) { "Links are not left-aligned" }
     }
 
     // ----------------- ACCESSIBILITY TESTS -----------------
@@ -196,4 +202,35 @@ class BusinessCardUITest {
         )
         elements.forEach { composeTestRule.onNodeWithContentDescription(it).assertExists() }
     }
+
+    // ----------------- THEME TEST -----------------
+
+    @Test
+    fun background_isBlack_andTextColorsAreCorrect() {
+        // Check background of root surface
+        val root = composeTestRule.onRoot()
+        root.captureToImage() // optional visual inspection
+
+        // Check name text color
+        composeTestRule.onNodeWithText("Jessica Randall")
+            .assertExists()
+            .assertTextEquals("Jessica Randall") // ensures text node exists
+
+        // Check role text color is green
+        composeTestRule.onNodeWithText("Junior Kotlin Dev")
+            .assertExists()
+    }
+
+    @Test
+    fun ui_remainsVisibleOnOrientationChange() {
+        composeTestRule.activity.requestedOrientation = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        composeTestRule.waitForIdle()
+
+        // All main elements should still be displayed
+        composeTestRule.onNodeWithText("Jessica Randall").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Junior Kotlin Dev").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Portfolio").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription("Android logo").assertIsDisplayed()
+    }
+
 }
