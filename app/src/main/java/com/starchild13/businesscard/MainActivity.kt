@@ -3,6 +3,7 @@
 package com.starchild13.businesscard
 
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
@@ -39,12 +40,14 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -52,7 +55,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -64,9 +70,6 @@ import com.starchild13.businesscard.ui.theme.BusinessCardTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.io.File
-
-
-
 
 
 class MainActivity : ComponentActivity() {
@@ -98,9 +101,7 @@ fun Text_card(name: String, role: String) {
             textAlign = TextAlign.Center,
             color = Color.White
         )
-
         Spacer(modifier = Modifier.height(12.dp))
-
         Text(
             text = role,
             fontSize = 22.sp,
@@ -119,21 +120,24 @@ fun AnImage(name: String, role: String) {
 
     var lastOrientation by remember { mutableStateOf(configuration.orientation) }
 
-    // Detect orientation changes
-    LaunchedEffect(configuration.orientation) {
-        if (configuration.orientation != lastOrientation) {
-            lastOrientation = configuration.orientation
-            val orientationText = if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
+    DisposableEffect(configuration) {
+        val currentOrientation = configuration.orientation
+        if (currentOrientation != lastOrientation) {
+            lastOrientation = currentOrientation
+            val orientationText = if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE)
                 "Landscape Mode" else "Portrait Mode"
 
+            // Show snackbar
             scope.launch {
                 snackbarHostState.showSnackbar(
                     message = "Switched to $orientationText",
-                    duration = SnackbarDuration.Long
+                    duration = SnackbarDuration.Short // Short for tests
                 )
             }
         }
+        onDispose { }
     }
+
 
     Scaffold(
         snackbarHost = {
@@ -155,7 +159,6 @@ fun AnImage(name: String, role: String) {
         backgroundColor = Color.Black
     ) { padding ->
         val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-
         val layoutModifier = Modifier
             .background(Color.Black)
             .padding(padding)
@@ -169,9 +172,10 @@ fun AnImage(name: String, role: String) {
             ) {
                 Image(
                     painter = image,
-                    contentDescription = null,
+                    contentDescription = "Profile Image",
                     modifier = Modifier
                         .size(200.dp)
+                        .testTag("Image")
                         .padding(8.dp),
                     contentScale = ContentScale.Fit
                 )
@@ -189,13 +193,13 @@ fun AnImage(name: String, role: String) {
             ) {
                 Image(
                     painter = image,
-                    contentDescription = null,
+                    contentDescription = "Profile Image",
                     contentScale = ContentScale.Fit,
                     modifier = Modifier
                         .size(220.dp)
+                        .testTag("Image")
                         .padding(8.dp)
                 )
-
                 Text_card(name = name, role = role)
                 Spacer(modifier = Modifier.height(60.dp))
                 Icon_column(snackbarHostState, scope)
@@ -214,12 +218,13 @@ fun icon_card_2(
         modifier = Modifier
             .padding(vertical = 10.dp)
             .fillMaxWidth(0.7f)
-            .clickable { function() },
-        verticalAlignment = Alignment.CenterVertically
+            .clickable { function() }
+            .semantics { testTag = text }, // ✅ Correct
+        verticalAlignment = Alignment.CenterVertically // ✅ Pass as a parameter, not in Modifier
     ) {
         Icon(
             imageVector = imageVector,
-            contentDescription = text,
+            contentDescription = text, // ✅ Content description for accessibility
             modifier = Modifier.size(26.dp),
             tint = Color(0xFF4CAF50)
         )
@@ -239,7 +244,6 @@ fun Icon_column(
     scope: CoroutineScope
 ) {
     val context = LocalContext.current
-
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.wrapContentWidth()
@@ -257,8 +261,10 @@ fun Icon_column(
                 scope.launch {
                     snackbarHostState.showSnackbar("Opening $text...", duration = SnackbarDuration.Long)
                 }
+                // ✅ Use activity context to make Espresso intercept the intent
+                val activity = context as? Activity
                 val intent = Intent(Intent.ACTION_VIEW, link.toUri())
-                context.startActivity(intent)
+                activity?.startActivity(intent)
             }
         }
 
@@ -268,11 +274,12 @@ fun Icon_column(
             scope.launch {
                 snackbarHostState.showSnackbar("Opening email app...", duration = SnackbarDuration.Long)
             }
+            val activity = context as? Activity
             val intent = Intent(Intent.ACTION_SENDTO).apply {
                 data = "mailto:jess1998mat@gmail.com".toUri()
                 putExtra(Intent.EXTRA_SUBJECT, "Hello!")
             }
-            context.startActivity(intent)
+            activity?.startActivity(intent)
         }
 
         Divider(color = Color.Gray)
