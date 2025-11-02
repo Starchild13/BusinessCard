@@ -40,33 +40,31 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.io.File
 
+
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             BusinessCardTheme {
-                // A surface container using the 'background' color from the theme
+                val snackbarHostState = remember { SnackbarHostState() }
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    AnImage(name = "Jessica Randall", role = "Junior Kotlin Dev")
-
+                    AnImage(name = "Jessica Randall", role = "Junior Kotlin Dev", snackbarHostState)
                 }
             }
         }
     }
 }
 
-
 @Composable
-fun Text_card(name: String, role: String){
+fun TextCard(name: String, role: String) {
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
-
     ) {
-
         Text(
             text = name,
             fontWeight = FontWeight.Bold,
@@ -75,7 +73,7 @@ fun Text_card(name: String, role: String){
             color = Color.White
         )
 
-        Spacer(modifier = Modifier.height(height = 15.dp))
+        Spacer(modifier = Modifier.height(15.dp))
 
         Text(
             text = role,
@@ -84,19 +82,15 @@ fun Text_card(name: String, role: String){
             color = Color.Green
         )
     }
-
 }
 
 @Composable
-fun AnImage(name: String, role: String) {
+fun AnImage(name: String, role: String, snackbarHostState: SnackbarHostState) {
     val image = painterResource(R.drawable.android_logo)
-    val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
     Scaffold(
-        snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState)
-        },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         backgroundColor = Color.Black
     ) { padding ->
         Column(
@@ -108,30 +102,31 @@ fun AnImage(name: String, role: String) {
         ) {
             Image(
                 painter = image,
-                contentDescription = null,
+                contentDescription = "Android logo",
                 modifier = Modifier,
                 contentScale = ContentScale.FillWidth
             )
 
-            Text_card(name = name, role = role)
+            TextCard(name = name, role = role)
 
             Spacer(modifier = Modifier.height(100.dp))
 
-            Icon_column(snackbarHostState, scope)
+            IconColumn(snackbarHostState, scope)
         }
     }
 }
+
 @Composable
-fun icon_card_2(
+fun IconCard(
     text: String,
     imageVector: ImageVector,
-    function: () -> Unit
+    onClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
-            .padding(top = 8.dp, bottom = 8.dp)
+            .padding(vertical = 8.dp)
             .fillMaxWidth(0.6f)
-            .clickable { function() }, // Makes entire row clickable
+            .clickable { onClick() },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
@@ -165,44 +160,28 @@ fun shareVCard(context: Context) {
     """.trimIndent()
 
     try {
-        // Create .vcf file in cache
-        val fileName = "JessicaRandall.vcf"
-        val file = File(context.cacheDir, fileName)
+        val file = File(context.cacheDir, "JessicaRandall.vcf")
         file.writeText(vcardString)
-
-        // Get URI using FileProvider
         val uri = FileProvider.getUriForFile(
             context,
             "${context.packageName}.fileprovider",
             file
         )
 
-        // Create share intent
         val shareIntent = Intent(Intent.ACTION_SEND).apply {
             type = "text/x-vcard"
             putExtra(Intent.EXTRA_STREAM, uri)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
-
         context.startActivity(Intent.createChooser(shareIntent, "Share contact via"))
-
     } catch (e: Exception) {
         Toast.makeText(context, "Failed to share contact", Toast.LENGTH_SHORT).show()
         e.printStackTrace()
     }
 }
 
-
-@Preview(showBackground = true)
 @Composable
-fun DefaultPreview() {
-    BusinessCardTheme() {
-        AnImage(name = "Jessica Randall", role = " Android Dev in Training")
-    }
-
-}
-@Composable
-fun Icon_column(
+fun IconColumn(
     snackbarHostState: SnackbarHostState,
     scope: CoroutineScope
 ) {
@@ -214,10 +193,8 @@ fun Icon_column(
     ) {
         Divider(color = Color.Gray, modifier = Modifier.fillMaxWidth())
 
-        icon_card_2("Portfolio", Icons.Filled.AccountBox) {
-            scope.launch {
-                snackbarHostState.showSnackbar("Opening Portfolio...")
-            }
+        IconCard("Portfolio", Icons.Filled.AccountBox) {
+            scope.launch { snackbarHostState.showSnackbar("Opening Portfolio...") }
             val intent = Intent(
                 Intent.ACTION_VIEW,
                 "https://sites.google.com/view/jessicarandall/home".toUri()
@@ -227,20 +204,16 @@ fun Icon_column(
 
         Divider(color = Color.Gray, modifier = Modifier.fillMaxWidth())
 
-        icon_card_2("@JustJessZA", imageVector = Icons.Filled.Share) {
-            scope.launch {
-                snackbarHostState.showSnackbar("Opening X...")
-            }
+        IconCard("@JustJessZA", Icons.Filled.Share) {
+            scope.launch { snackbarHostState.showSnackbar("Opening X...") }
             val intent = Intent(Intent.ACTION_VIEW, "https://x.com/JustJessZA".toUri())
             context.startActivity(intent)
         }
 
         Divider(color = Color.Gray, modifier = Modifier.fillMaxWidth())
 
-        icon_card_2("LinkedIn", Icons.Filled.AccountCircle) {
-            scope.launch {
-                snackbarHostState.showSnackbar("Opening LinkedIn...")
-            }
+        IconCard("LinkedIn", Icons.Filled.AccountCircle) {
+            scope.launch { snackbarHostState.showSnackbar("Opening LinkedIn...") }
             val intent = Intent(
                 Intent.ACTION_VIEW,
                 "https://www.linkedin.com/in/jessica-randall-293ab9205/".toUri()
@@ -250,20 +223,16 @@ fun Icon_column(
 
         Divider(color = Color.Gray, modifier = Modifier.fillMaxWidth())
 
-        icon_card_2("GitHub", Icons.Filled.Face) {
-            scope.launch {
-                snackbarHostState.showSnackbar("Opening GitHub...")
-            }
+        IconCard("GitHub", Icons.Filled.Face) {
+            scope.launch { snackbarHostState.showSnackbar("Opening GitHub...") }
             val intent = Intent(Intent.ACTION_VIEW, "https://github.com/Starchild13".toUri())
             context.startActivity(intent)
         }
 
         Divider(color = Color.Gray, modifier = Modifier.fillMaxWidth())
 
-        icon_card_2("jess1998mat@gmail.com", Icons.Filled.Email) {
-            scope.launch {
-                snackbarHostState.showSnackbar("Opening email app...")
-            }
+        IconCard("jess1998mat@gmail.com", Icons.Filled.Email) {
+            scope.launch { snackbarHostState.showSnackbar("Opening email app...") }
             val intent = Intent(Intent.ACTION_SENDTO).apply {
                 data = "mailto:jess1998mat@gmail.com".toUri()
                 putExtra(Intent.EXTRA_SUBJECT, "Hello!")
@@ -273,34 +242,20 @@ fun Icon_column(
 
         Divider(color = Color.Gray, modifier = Modifier.fillMaxWidth())
 
-        icon_card_2("Share Contact", Icons.Filled.Share) {
+        IconCard("Share Contact", Icons.Filled.Share) {
             shareVCard(context)
-            scope.launch {
-                snackbarHostState.showSnackbar("Sharing contact...")
-            }
-
-
+            scope.launch { snackbarHostState.showSnackbar("Sharing contact...") }
         }
 
         Divider(color = Color.Gray, modifier = Modifier.fillMaxWidth())
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+@Preview(showBackground = true)
+@Composable
+fun DefaultPreview() {
+    BusinessCardTheme {
+        val snackbarHostState = remember { SnackbarHostState() }
+        AnImage("Jessica Randall", "Android Dev in Training", snackbarHostState)
+    }
+}
