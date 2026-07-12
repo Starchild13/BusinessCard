@@ -4,42 +4,27 @@ plugins {
 }
 
 android {
-    namespace 'com.starchild13.businesscard'
-    compileSdk 36
+    // ... rest of android block ...
+}
 
-    defaultConfig {
-        applicationId "com.starchild13.businesscard"
-        minSdk 24
-        targetSdk 36
-        versionCode 2
-        versionName "1.0.1"
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary true
-        }
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    buildFeatures {
-        compose true
-    }
-    packagingOptions {
-        resources {
-            excludes += '/META-INF/{AL2.0,LGPL2.1}'
-        }
+// DEMO ERROR: This block intentionally causes a Prolonged build time.
+// EXPLANATION: This custom task 'slowTask' uses Thread.sleep to simulate a 30-second delay. 
+// Making it a dependency of 'preBuild' ensures it runs every time the project is built, significantly increasing build times.
+tasks.register("slowTask") {
+    doLast {
+        println("Simulating a very slow build step (30 seconds)...")
+        Thread.sleep(30000)
     }
 }
+tasks.named("preBuild") {
+    dependsOn("slowTask")
+}
+
+// DEMO SOLUTION:
+// Replace the incorrect configuration above with:
+// // (Remove the slowTask registration and the dependency on it)
+// EXPLANATION: Removing artificial delays or optimizing slow custom tasks restores build performance.
+// Do not apply this solution yet. It is intentionally commented out for the demo.
 
 dependencies {
 
