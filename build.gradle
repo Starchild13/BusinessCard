@@ -5,8 +5,16 @@ buildscript {
 }
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
-    id 'com.android.application' version '9.2.1' apply false
-    id 'com.android.library' version '9.2.1' apply false
+    // DEMO ERROR: This line intentionally causes a Incompatible Android Gradle Plugin (AGP).
+    // EXPLANATION: AGP 7.0.0 is incompatible with Gradle 9.6.1. Gradle 9 requires at least AGP 8.4 or higher.
+    id 'com.android.application' version '7.0.0' apply false
+    id 'com.android.library' version '7.0.0' apply false
+    // DEMO SOLUTION:
+    // Replace the incorrect configuration above with:
+    // id 'com.android.application' version '9.2.1' apply false
+    // id 'com.android.library' version '9.2.1' apply false
+    // EXPLANATION: Using a version of AGP that is compatible with the current Gradle version resolves the bootstrap failure.
+    // Do not apply this solution yet. It is intentionally commented out for the demo.
     id 'org.jetbrains.kotlin.android' version '2.4.0' apply false
     id 'org.jetbrains.kotlin.plugin.compose' version '2.4.0' apply false
 }
