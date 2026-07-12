@@ -1,44 +1,52 @@
 package com.starchild13.businesscard.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.darkColors
-import androidx.compose.material.lightColors
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 
-private val DarkColorPalette = darkColors(
-    primary = Purple200,
-    primaryVariant = Purple700,
-    secondary = Teal200
+private val DarkColorScheme = darkColorScheme(
+    primary = Color(0xFF4CAF50),
+    secondary = Color(0xFF03DAC5),
+    tertiary = Color(0xFF3700B3),
+    background = Color.Black,
+    surface = Color.Black,
+    onPrimary = Color.White,
+    onSecondary = Color.Black,
+    onTertiary = Color.White,
+    onBackground = Color.White,
+    onSurface = Color.White,
 )
 
-private val LightColorPalette = lightColors(
-    primary = Purple500,
-    primaryVariant = Purple700,
-    secondary = Teal200
-
-    /* Other default colors to override
+private val LightColorScheme = lightColorScheme(
+    primary = Color(0xFF4CAF50),
+    secondary = Color(0xFF03DAC5),
+    tertiary = Color(0xFF3700B3),
     background = Color.White,
     surface = Color.White,
     onPrimary = Color.White,
     onSecondary = Color.Black,
+    onTertiary = Color.White,
     onBackground = Color.Black,
     onSurface = Color.Black,
-    */
 )
 
 @Composable
-fun BusinessCardTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
-    val colors = if (darkTheme) {
-        DarkColorPalette
+fun BusinessCardTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable () -> Unit
+) {
+    val colorScheme = if (darkTheme) {
+        DarkColorScheme
     } else {
-        LightColorPalette
+        LightColorScheme
     }
 
     MaterialTheme(
-        colors = colors,
+        colorScheme = colorScheme,
         typography = Typography,
-        shapes = Shapes,
         content = content
     )
 }
