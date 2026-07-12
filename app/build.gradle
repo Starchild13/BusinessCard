@@ -1,6 +1,15 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.plugin.compose'
+    // DEMO ERROR: This line intentionally causes a Plugin failure.
+    // EXPLANATION: Attempting to apply a plugin ID 'com.nonexistent.plugin' that is not found in the classpath or plugin portals.
+    id 'com.nonexistent.plugin' version '1.0.0'
+
+    // DEMO SOLUTION:
+    // Replace the incorrect configuration above with:
+    // // (Remove the line entirely or use a valid plugin ID)
+    // EXPLANATION: Removing invalid plugin declarations allows Gradle to configure the project.
+    // Do not apply this solution yet. It is intentionally commented out for the demo.
 }
 
 android {
