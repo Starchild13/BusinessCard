@@ -31,7 +31,7 @@ A modern, elegant, and fully interactive digital business card Android applicati
 | :---: | :---: | :---: |
 | ![GitHub Profile](screenshots/github_profile.png)<br>*In-app WebView rendering GitHub repository & bio* | ![Email Composer](screenshots/email_composer.png)<br>*Compose email with subject, message, and back button* | ![Share Contact](screenshots/share_contact.png)<br>*vCard preview, system share, and clipboard copy* |
 
-> *Note: Place your screenshot PNG files inside the [`screenshots/`](screenshots/) directory using the filenames above (`main_card.png`, `sessionize_profile.png`,`linkedin_profile.png` `twitter_profile.png`, `github_profile.png`, `email_composer.png`, `share_contact.png`) to have them display here.*
+
 
 ---
 
