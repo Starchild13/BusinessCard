@@ -8,6 +8,7 @@
 A modern, elegant, and fully interactive digital business card Android application built from scratch using **Kotlin** and **Jetpack Compose (Material 3)**. Designed for professionals, developers, and tech enthusiasts to share their portfolios, social profiles, and contact information seamlessly on the go.
 
 ---
+
 ## ✨ Features
 
 - **🎨 Modern Material 3 UI:** Built using Jetpack Compose with sleek dark mode aesthetics, vibrant green accents, and custom typography.
@@ -24,11 +25,13 @@ A modern, elegant, and fully interactive digital business card Android applicati
 
 | Main Business Card | Sessionize Profile | X (Twitter) Profile |
 | :---: | :---: | :---: |
-| *Dark theme card with sessionize, social links, email, and share actions* | *In-app WebView with top app bar, back button, and browser launcher* | *In-app WebView rendering @JustJessZA profile* |
+| ![Main Business Card](screenshots/main_card.png)<br>*Dark theme card with sessionize, social links, email, and share actions* | ![Sessionize Profile](screenshots/sessionize_profile.png)<br>*In-app WebView with top app bar, back button, and browser launcher* | ![X Profile](screenshots/twitter_profile.png)<br>*In-app WebView rendering @JustJessZA profile* |
 
 | GitHub Profile | In-App Email Composer | In-App Share Contact |
 | :---: | :---: | :---: |
-| *In-app WebView rendering GitHub repository & bio* | *Compose email with subject, message, and back button* | *vCard preview, system share, and clipboard copy* |
+| ![GitHub Profile](screenshots/github_profile.png)<br>*In-app WebView rendering GitHub repository & bio* | ![Email Composer](screenshots/email_composer.png)<br>*Compose email with subject, message, and back button* | ![Share Contact](screenshots/share_contact.png)<br>*vCard preview, system share, and clipboard copy* |
+
+> *Note: Place your screenshot PNG files inside the [`screenshots/`](screenshots/) directory using the filenames above (`main_card.png`, `sessionize_profile.png`,`linkedin_profile.png` `twitter_profile.png`, `github_profile.png`, `email_composer.png`, `share_contact.png`) to have them display here.*
 
 ---
 
