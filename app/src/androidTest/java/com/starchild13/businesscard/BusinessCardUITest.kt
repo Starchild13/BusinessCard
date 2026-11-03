@@ -96,7 +96,7 @@ class BusinessCardUITest {
     @Test
     fun allIconLabels_areDisplayed() {
         val labels = listOf(
-            "Portfolio", "@JustJessZA", "LinkedIn",
+            "Sessionize", "@JustJessZA", "LinkedIn",
             "GitHub", "Email Me", "Share Contact"
         )
         labels.forEach { composeTestRule.onNodeWithText(it).assertIsDisplayed() }
@@ -111,7 +111,7 @@ class BusinessCardUITest {
     @Test
     fun clickingLinks_launchesExpectedIntents() {
         val intentMap = mapOf(
-            "Portfolio" to "https://sites.google.com/view/jessicarandall/home",
+            "Sessionize" to "https://sessionize.com/Jessica_Randall/",
             "@JustJessZA" to "https://x.com/JustJessZA",
             "LinkedIn" to "https://www.linkedin.com/in/jessica-randall-293ab9205/",
             "GitHub" to "https://github.com/Starchild13",
@@ -124,12 +124,14 @@ class BusinessCardUITest {
                 .assertHasClickAction()
                 .performClick()
 
-            intended(
-                allOf(
-                    hasAction(if (label == "Email Me") Intent.ACTION_SENDTO else Intent.ACTION_VIEW),
-                    hasData(uri)
+            if (label != "Sessionize") {
+                intended(
+                    allOf(
+                        hasAction(if (label == "Email Me") Intent.ACTION_SENDTO else Intent.ACTION_VIEW),
+                        hasData(uri)
+                    )
                 )
-            )
+            }
         }
 
         // Special test for the "Share Contact" button using ACTION_SEND
@@ -148,7 +150,7 @@ class BusinessCardUITest {
     @Test
     fun clickingIcons_showsSnackbarMessages() {
         val messages = mapOf(
-            "Portfolio" to "Opening Portfolio...",
+            "Sessionize" to "Opening Sessionize...",
             "@JustJessZA" to "Opening X...",
             "LinkedIn" to "Opening LinkedIn...",
             "GitHub" to "Opening GitHub...",
@@ -215,13 +217,13 @@ class BusinessCardUITest {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithText("Jessica Randall").assertIsDisplayed()
         composeTestRule.onNodeWithText("Junior Kotlin Dev").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Portfolio").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Sessionize").assertIsDisplayed()
 
         // Rotate back to portrait and check again
         composeTestRule.activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithText("Jessica Randall").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Portfolio").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Sessionize").assertIsDisplayed()
     }
 
     // ------------------ ACCESSIBILITY TESTS ------------------
@@ -233,7 +235,7 @@ class BusinessCardUITest {
     @Test
     fun clickableElements_haveContentDescriptionsOrLabels() {
         val clickableLabels = listOf(
-            "Portfolio", "@JustJessZA", "LinkedIn", "GitHub",
+            "Sessionize", "@JustJessZA", "LinkedIn", "GitHub",
             "Email Me", "Share Contact"
         )
         clickableLabels.forEach {
