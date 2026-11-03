@@ -8,7 +8,6 @@
 A modern, elegant, and fully interactive digital business card Android application built from scratch using **Kotlin** and **Jetpack Compose (Material 3)**. Designed for professionals, developers, and tech enthusiasts to share their portfolios, social profiles, and contact information seamlessly on the go.
 
 ---
-
 ## ✨ Features
 
 - **🎨 Modern Material 3 UI:** Built using Jetpack Compose with sleek dark mode aesthetics, vibrant green accents, and custom typography.
